@@ -19,6 +19,7 @@ import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.is;
+import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.Status.OK;
 
@@ -46,7 +47,7 @@ public class Packet{
         Request request = builder(path).
                 method(HttpMethod.POST).
                 entity(Json.json(json)).
-                header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON).
+                header(CONTENT_TYPE, APPLICATION_JSON).
                 build();
         Response response = http.handle(request);
         return Json.map(response.entity().toString());
