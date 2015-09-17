@@ -1,5 +1,6 @@
-package build._10second;
+package build._10second.packet;
 
+import build._10second.JsonRecord;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.predicates.Predicate;
 
@@ -14,7 +15,7 @@ import static com.googlecode.utterlyidle.PathParameters.pathParameters;
 import static com.googlecode.utterlyidle.UriTemplate.uriTemplate;
 import static java.lang.Thread.sleep;
 
-class Project extends JsonRecord {
+public class Project extends JsonRecord {
     public String id;
     public String name;
 
@@ -33,33 +34,3 @@ class Project extends JsonRecord {
 
 }
 
-class Device extends JsonRecord {
-    public String id;
-    public String hostname;
-    public String href;
-    public String state;
-    private List<Map<String, Object>> ip_addresses;
-    public Sequence<IpAddress> ipAddresses() {
-        return sequence(ip_addresses).map(data -> JsonRecord.create(IpAddress.class, data));
-    }
-
-    public Device wait(Packet packet, Predicate<Device> predicate) throws Exception {
-        return repeat(() -> {
-                sleep(Duration.ofSeconds(10).toMillis());
-                return refesh(packet);
-            }).find(predicate).get();
-    }
-
-    public Device refesh(Packet packet) throws Exception {
-        return JsonRecord.create(Device.class, packet.getJson(href));
-    }
-}
-
-class IpAddress extends JsonRecord {
-    public BigDecimal address_family;
-    public String netmask;
-    public BigDecimal cidr;
-    public String address;
-    public String gateway;
-    public boolean Public;
-}

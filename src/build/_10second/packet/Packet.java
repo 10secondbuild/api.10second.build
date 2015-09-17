@@ -1,5 +1,6 @@
-package build._10second;
+package build._10second.packet;
 
+import build._10second.JsonRecord;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.io.Uri;

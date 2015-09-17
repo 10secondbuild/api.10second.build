@@ -1,4 +1,4 @@
-package build._10second;
+package build._10second.packet;
 
 import com.googlecode.totallylazy.Sequence;
 

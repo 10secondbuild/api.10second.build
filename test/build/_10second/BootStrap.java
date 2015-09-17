@@ -1,5 +1,10 @@
 package build._10second;
 
+import build._10second.packet.Device;
+import build._10second.packet.IpAddress;
+import build._10second.packet.Packet;
+import build._10second.packet.Project;
+
 import java.math.BigDecimal;
 
 import static com.googlecode.totallylazy.Maps.map;
