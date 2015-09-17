@@ -1,6 +1,7 @@
 package build._10second.packet;
 
 import build._10second.JsonRecord;
+import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.io.Uri;
@@ -25,20 +26,25 @@ import static com.googlecode.totallylazy.predicates.Predicates.is;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
+import static com.googlecode.utterlyidle.RequestBuilder.get;
+import static com.googlecode.utterlyidle.RequestBuilder.modify;
+import static com.googlecode.utterlyidle.RequestBuilder.post;
 
 public class Packet {
-    private final String apiKey;
     private final HttpClient http;
-    private final Uri baseUrl = uri("https://api.packet.net/");
+    private static final Uri baseUrl = uri("https://api.packet.net/");
 
     public Packet(String apiKey, HttpClient http) {
-        this.apiKey = apiKey;
-        this.http = http;
+        this.http = new ModifyRequest(new AuditHandler(http, new PrintAuditor(System.out)), request ->
+                modify(request).
+                uri(baseUrl.mergePath(request.uri().path())).
+                header("X-Auth-Token", apiKey).
+                accepting(APPLICATION_JSON).
+                build());
     }
 
     public Packet() {
-        this(hasValue(System.getenv("PACKET_API_KEY")),
-                new AuditHandler(new ClientHttpHandler(), new PrintAuditor(System.out)));
+        this(hasValue(System.getenv("PACKET_API_KEY")), new ClientHttpHandler());
     }
 
     private static String hasValue(String value) {
@@ -47,25 +53,18 @@ public class Packet {
     }
 
     public Map<String, Object> getJson(String path) throws Exception {
-        Request request = builder(path).build();
-        Response response = http.handle(request);
-        return Json.map(response.entity().toString());
+        return json(get(path).build());
     }
 
     public Map<String, Object> postJson(String path, Map<String, Object> json) throws Exception {
-        Request request = builder(path).
-                method(HttpMethod.POST).
+        return json(post(path).
                 entity(Json.json(json)).
                 header(CONTENT_TYPE, APPLICATION_JSON).
-                build();
-        Response response = http.handle(request);
-        return Json.map(response.entity().toString());
+                build());
     }
 
-    private RequestBuilder builder(String path) {
-        return RequestBuilder.get(baseUrl.mergePath(path)).
-                header("X-Auth-Token", apiKey).
-                accepting(APPLICATION_JSON);
+    private Map<String, Object> json(Request request) throws Exception {
+        return Json.map(http.handle(request).entity().toString());
     }
 
     public Sequence<Project> projects() throws Exception {

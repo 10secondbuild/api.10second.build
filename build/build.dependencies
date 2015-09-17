@@ -1,0 +1,4 @@
+mvn:org.hamcrest:hamcrest-core:jar|sources:1.2
+mvn:org.hamcrest:hamcrest-library:jar|sources:1.2
+mvn:junit:junit-dep:jar|sources:4.8.2
+
