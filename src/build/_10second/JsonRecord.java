@@ -2,9 +2,11 @@ package build._10second;
 
 import com.googlecode.totallylazy.Option;
 import com.googlecode.totallylazy.Record;
+import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Sets;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.reflection.Fields;
+import com.googlecode.totallylazy.reflection.Reflection;
 
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
@@ -12,13 +14,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.googlecode.totallylazy.Classes.allClasses;
 import static com.googlecode.totallylazy.LazyException.lazyException;
 import static com.googlecode.totallylazy.Option.none;
 import static com.googlecode.totallylazy.Pair.pair;
+import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Sets.set;
 import static com.googlecode.totallylazy.Sets.union;
+import static com.googlecode.totallylazy.predicates.Predicates.not;
+import static com.googlecode.totallylazy.predicates.Predicates.where;
 import static com.googlecode.totallylazy.reflection.Fields.fields;
+import static com.googlecode.totallylazy.reflection.Fields.modifiers;
 import static com.googlecode.totallylazy.reflection.Fields.nonSyntheticFields;
+import static com.googlecode.totallylazy.reflection.Reflection.synthetic;
 import static java.util.Collections.unmodifiableSet;
 
 public abstract class JsonRecord extends AbstractMap<String, Object> {
@@ -42,8 +50,11 @@ public abstract class JsonRecord extends AbstractMap<String, Object> {
     }
 
     private Set<Entry<String, Object>> fieldSet() {
-        return set(nonSyntheticFields(getClass()).
-                filter(f -> !f.getName().startsWith("_")).
+        Sequence<Class<?>> classes = allClasses(getClass()).
+                reject(c -> c.isInterface()).
+                takeWhile(c -> !c.equals(JsonRecord.class));
+        return set(classes.flatMap(Fields.fields()).
+                reject(where(modifiers, synthetic)).
                 map(f -> pair(f.getName(), Fields.get(f, this))));
     }
 

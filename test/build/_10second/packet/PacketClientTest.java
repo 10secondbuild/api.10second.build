@@ -10,7 +10,10 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static com.googlecode.totallylazy.Assert.assertFalse;
 import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Assert.assertTrue;
+import static com.googlecode.totallylazy.Maps.map;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.predicates.Predicates.instanceOf;
 import static com.googlecode.totallylazy.predicates.Predicates.is;
@@ -68,20 +71,28 @@ public class PacketClientTest {
     @Test
     @Ignore("Manual test - takes 7 minutes")
     public void supportsCreatingADeviceAndRemovingIt() throws Exception {
+        String testHost = getClass().getSimpleName().toLowerCase();
+
         Project project = client.project("10second.build");
 
-        Device provisioned = client.provisionDevice(project, new Device() {{
-            hostname = UUID.randomUUID().toString();
-            put("plan", "baremetal_1");
-            put("facility", "ewr1");
-            put("operating_system", "ubuntu_14_04");
-        }});
+        assertFalse(client.devices(project).exists(d -> d.hostname.equals(testHost)));
+
+        Device provisioned = client.provisionDevice(project, map(
+            "hostname", testHost,
+            "plan", "baremetal_1",
+            "facility", "ewr1",
+            "operating_system", "ubuntu_14_04"
+        ));
 
         Device active = client.pollUntil(provisioned, d -> d.state.equals("active"));
 
         Option<IpAddress> publicIp4 = active.ipAddresses().find(ip -> ip.address_family.equals(new BigDecimal("4")) && ip.Public);
         assertThat(publicIp4, is(instanceOf(Some.class)));
 
+        assertTrue(client.devices(project).exists(d -> d.hostname.equals(testHost)));
+
         client.deprovisionDevice(active);
+
+        assertFalse(client.devices(project).exists(d -> d.hostname.equals(testHost)));
     }
 }
