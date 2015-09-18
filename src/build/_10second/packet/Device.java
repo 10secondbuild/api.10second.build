@@ -2,9 +2,7 @@ package build._10second.packet;
 
 import build._10second.JsonRecord;
 import com.googlecode.totallylazy.Sequence;
-import com.googlecode.totallylazy.predicates.Predicate;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +20,4 @@ public class Device extends JsonRecord {
         return sequence(ip_addresses).map(data -> create(IpAddress.class, data));
     }
 
-    public Device wait(Packet packet, Predicate<Device> predicate) throws Exception {
-        return repeat(() -> {
-                sleep(Duration.ofSeconds(10).toMillis());
-                return refesh(packet);
-            }).find(predicate).get();
-    }
-
-    public Device refesh(Packet packet) throws Exception {
-        return create(Device.class, packet.getJson(href));
-    }
 }

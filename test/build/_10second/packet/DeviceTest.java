@@ -10,8 +10,9 @@ import static com.googlecode.totallylazy.Sequences.sequence;
 public class DeviceTest {
     @Test
     public void canGetDevices() throws Exception {
-        Packet packet = new Packet();
-        Sequence<Device> devices = packet.project("10second.build").devices(packet);
+        PacketClient packetClient = new PacketClient();
+        Project project = packetClient.project("10second.build");
+        Sequence<Device> devices = packetClient.devices(project);
 
         for (Device device : devices) {
             IpAddress publicIp = sequence(device.ipAddresses()).

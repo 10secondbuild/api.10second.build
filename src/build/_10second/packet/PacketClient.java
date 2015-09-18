@@ -6,19 +6,19 @@ import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
+import com.googlecode.totallylazy.predicates.Predicate;
 import com.googlecode.utterlyidle.Request;
-import com.googlecode.utterlyidle.RequestBuilder;
-import com.googlecode.utterlyidle.Response;
-import com.googlecode.utterlyidle.annotations.HttpMethod;
 import com.googlecode.utterlyidle.handlers.AuditHandler;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
 import com.googlecode.utterlyidle.handlers.PrintAuditor;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Sequences.repeat;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Strings.blank;
 import static com.googlecode.totallylazy.io.Uri.uri;
@@ -29,12 +29,13 @@ import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.RequestBuilder.get;
 import static com.googlecode.utterlyidle.RequestBuilder.modify;
 import static com.googlecode.utterlyidle.RequestBuilder.post;
+import static java.lang.Thread.sleep;
 
-public class Packet {
+public class PacketClient {
     private final HttpClient http;
     private static final Uri baseUrl = uri("https://api.packet.net/");
 
-    public Packet(String apiKey, HttpClient http) {
+    public PacketClient(String apiKey, HttpClient http) {
         this.http = new ModifyRequest(new AuditHandler(http, new PrintAuditor(System.out)), request ->
                 modify(request).
                 uri(baseUrl.mergePath(request.uri().path())).
@@ -43,28 +44,8 @@ public class Packet {
                 build());
     }
 
-    public Packet() {
+    public PacketClient() {
         this(hasValue(System.getenv("PACKET_API_KEY")), new ClientHttpHandler());
-    }
-
-    private static String hasValue(String value) {
-        assertThat(value, not(blank));
-        return value;
-    }
-
-    public Map<String, Object> getJson(String path) throws Exception {
-        return json(get(path).build());
-    }
-
-    public Map<String, Object> postJson(String path, Map<String, Object> json) throws Exception {
-        return json(post(path).
-                entity(Json.json(json)).
-                header(CONTENT_TYPE, APPLICATION_JSON).
-                build());
-    }
-
-    private Map<String, Object> json(Request request) throws Exception {
-        return Json.map(http.handle(request).entity().toString());
     }
 
     public Sequence<Project> projects() throws Exception {
@@ -79,11 +60,59 @@ public class Packet {
         return list("facilities");
     }
 
-    public Sequence<Map<String, Object>> list(String name) throws Exception {
-        return list(name, name);
+    public Sequence<Device> devices(Project project) throws Exception {
+        return list("devices", project.devicesPath()).map(data -> JsonRecord.create(Device.class, data));
     }
 
-    public Sequence<Map<String, Object>> list(String name, String path) throws Exception {
+    public Device provisionDevice(Project project, Map<String, Object> device) throws Exception {
+        Uri path = project.devicesPath();
+        return JsonRecord.create(Device.class, postJson(path, device));
+    }
+
+    public Device pollUntil(Device device, Predicate<Device> predicate) throws Exception {
+        return repeat(() -> {
+            sleep(Duration.ofSeconds(10).toMillis());
+            return reload(device);
+        }).find(predicate).get();
+    }
+
+    public Device reload(Device device) throws Exception {
+        return JsonRecord.create(Device.class, getJson(device.href));
+    }
+
+    private static String hasValue(String value) {
+        assertThat(value, not(blank));
+        return value;
+    }
+
+    private Map<String, Object> getJson(String path) throws Exception {
+        return getJson(uri(path));
+    }
+
+    private Map<String, Object> getJson(Uri path) throws Exception {
+        return json(get(path).build());
+    }
+
+    private Map<String, Object> postJson(String path, Map<String, Object> json) throws Exception {
+        return postJson(uri(path), json);
+    }
+
+    private Map<String, Object> postJson(Uri path, Map<String, Object> json) throws Exception {
+        return json(post(path).
+                entity(Json.json(json)).
+                header(CONTENT_TYPE, APPLICATION_JSON).
+                build());
+    }
+
+    private Map<String, Object> json(Request request) throws Exception {
+        return Json.map(http.handle(request).entity().toString());
+    }
+
+    private Sequence<Map<String, Object>> list(String name) throws Exception {
+        return list(name, uri(name));
+    }
+
+    private Sequence<Map<String, Object>> list(String name, Uri path) throws Exception {
         return sequence(Unchecked.<List<Map<String, Object>>>cast(getJson(path).get(name)));
     }
 }

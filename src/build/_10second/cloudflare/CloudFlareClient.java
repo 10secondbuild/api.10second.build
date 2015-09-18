@@ -17,7 +17,6 @@ import java.util.Map;
 import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Strings.blank;
-import static com.googlecode.totallylazy.Strings.join;
 import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
@@ -27,11 +26,11 @@ import static com.googlecode.utterlyidle.PathParameters.pathParameters;
 import static com.googlecode.utterlyidle.RequestBuilder.*;
 import static com.googlecode.utterlyidle.UriTemplate.uriTemplate;
 
-public class CloudFlare {
+public class CloudFlareClient {
     private final HttpClient http;
     private static final Uri baseUrl = uri("https://api.cloudflare.com/client/v4/");
 
-    public CloudFlare(String apiKey, String email, HttpClient http) {
+    public CloudFlareClient(String apiKey, String email, HttpClient http) {
         this.http = new ModifyRequest(new AuditHandler(http, new PrintAuditor(System.out)), request ->
                 modify(request).
                 uri(baseUrl.mergePath(request.uri().path())).
@@ -41,7 +40,7 @@ public class CloudFlare {
                 build());
     }
 
-    public CloudFlare() {
+    public CloudFlareClient() {
         this(apiKey(), email(), new ClientHttpHandler());
     }
 
