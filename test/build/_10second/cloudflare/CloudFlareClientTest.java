@@ -60,12 +60,13 @@ public class CloudFlareClientTest {
     }
 
     @Test
-    @Ignore("Manual test")
     public void supportsCreatingDnsRecord() throws Exception {
         Zone zone = client.zone("10second.build");
         String name = getClass().getSimpleName().toLowerCase();
         String ipAddress = "10.0.0.1";
         DnsRecord record = client.createDnsRecord(zone, map("type", "A", "name", name, "content", ipAddress));
-        client.delete(zone, record);
+        String idOfDeleted = client.delete(zone, record);
+        assertThat(idOfDeleted, is(instanceOf(String.class)));
+
     }
 }

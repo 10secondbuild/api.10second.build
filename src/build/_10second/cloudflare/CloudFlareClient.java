@@ -103,8 +103,8 @@ public class CloudFlareClient {
         return JsonRecord.create(DnsRecord.class, data);
     }
 
-    public DnsRecord delete(Zone zone, DnsRecord dnsRecord) throws Exception {
+    public String delete(Zone zone, DnsRecord dnsRecord) throws Exception {
         Map<String, Object> json = json(RequestBuilder.delete(zone.dnsRecordsPath().toString() + "/" + dnsRecord.id).build());
-        return JsonRecord.create(DnsRecord.class, json);
+        return cast(json.get("id"));
     }
 }

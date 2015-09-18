@@ -118,8 +118,8 @@ public class PacketClient {
         return sequence(Unchecked.<List<Map<String, Object>>>cast(getJson(path).get(name)));
     }
 
-    public void deprovisionDevice(Project project, Device device) throws Exception {
-        Response response = http.handle(delete(project.devicesPath() + "/" + device.id).build());
-        assertTrue(response.status().isSuccessful());
+    public void deprovisionDevice(Device device) throws Exception {
+        Response response = http.handle(delete(device.href).build());
+        assertThat(response.status(), is(Status.NO_CONTENT));
     }
 }

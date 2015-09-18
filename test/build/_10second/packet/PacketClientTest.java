@@ -8,7 +8,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static com.googlecode.totallylazy.Assert.assertFalse;
 import static com.googlecode.totallylazy.Assert.assertThat;
@@ -91,7 +90,7 @@ public class PacketClientTest {
 
         assertTrue(client.devices(project).exists(d -> d.hostname.equals(testHost)));
 
-        client.deprovisionDevice(project, active);
+        client.deprovisionDevice(active);
 
         assertFalse(client.devices(project).exists(d -> d.hostname.equals(testHost)));
     }
