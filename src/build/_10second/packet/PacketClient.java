@@ -1,5 +1,6 @@
 package build._10second.packet;
 
+import build._10second.AuditFailures;
 import build._10second.JsonRecord;
 import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
@@ -37,7 +38,7 @@ public class PacketClient {
     private static final Uri baseUrl = uri("https://api.packet.net/");
 
     public PacketClient(String apiKey, HttpClient http) {
-        this.http = new ModifyRequest(new AuditHandler(http, new PrintAuditor(System.out)), request ->
+        this.http = new ModifyRequest(new AuditFailures(http), request ->
                 modify(request).
                 uri(baseUrl.mergePath(request.uri().path())).
                 header("X-Auth-Token", apiKey).
@@ -117,8 +118,8 @@ public class PacketClient {
         return sequence(Unchecked.<List<Map<String, Object>>>cast(getJson(path).get(name)));
     }
 
-    public void deprovisionDevice(Device device) throws Exception {
-        Response response = http.handle(delete("/devices/" + device.id).build());
+    public void deprovisionDevice(Project project, Device device) throws Exception {
+        Response response = http.handle(delete(project.devicesPath() + "/" + device.id).build());
         assertTrue(response.status().isSuccessful());
     }
 }

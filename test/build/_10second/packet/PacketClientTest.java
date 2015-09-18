@@ -91,7 +91,7 @@ public class PacketClientTest {
 
         assertTrue(client.devices(project).exists(d -> d.hostname.equals(testHost)));
 
-        client.deprovisionDevice(active);
+        client.deprovisionDevice(project, active);
 
         assertFalse(client.devices(project).exists(d -> d.hostname.equals(testHost)));
     }

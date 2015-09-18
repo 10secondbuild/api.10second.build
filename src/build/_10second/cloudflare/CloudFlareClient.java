@@ -1,11 +1,14 @@
 package build._10second.cloudflare;
 
+import build._10second.AuditFailures;
 import build._10second.JsonRecord;
 import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
+import com.googlecode.utterlyidle.MediaType;
 import com.googlecode.utterlyidle.Request;
+import com.googlecode.utterlyidle.RequestBuilder;
 import com.googlecode.utterlyidle.handlers.AuditHandler;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
@@ -21,17 +24,17 @@ import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
+import static com.googlecode.utterlyidle.MediaType.APPLICATION_JAVASCRIPT;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.PathParameters.pathParameters;
 import static com.googlecode.utterlyidle.RequestBuilder.*;
-import static com.googlecode.utterlyidle.UriTemplate.uriTemplate;
 
 public class CloudFlareClient {
     private final HttpClient http;
     private static final Uri baseUrl = uri("https://api.cloudflare.com/client/v4/");
 
     public CloudFlareClient(String apiKey, String email, HttpClient http) {
-        this.http = new ModifyRequest(new AuditHandler(http, new PrintAuditor(System.out)), request ->
+        this.http = new ModifyRequest(new AuditFailures(http), request ->
                 modify(request).
                 uri(baseUrl.mergePath(request.uri().path())).
                 header("X-Auth-Key", apiKey).
@@ -69,7 +72,8 @@ public class CloudFlareClient {
     }
 
     private <T> T json(Request request) throws Exception {
-        return cast(Json.map(http.handle(request).entity().toString()).get("result"));
+        Map<String, Object> json = Json.map(http.handle(request).entity().toString());
+        return cast(json.get("result"));
     }
 
     public User user() throws Exception {
@@ -87,12 +91,20 @@ public class CloudFlareClient {
     }
 
     public Sequence<DnsRecord> dnsRecords(Zone zone) throws Exception {
-        List<Map<String, Object>> zones = json(get(dnsRecordsPath(zone)).build());
+        List<Map<String, Object>> zones = json(get(zone.dnsRecordsPath()).build());
         return sequence(zones).map(data -> JsonRecord.create(DnsRecord.class, data));
     }
 
-    private String dnsRecordsPath(Zone zone) {
-        return uriTemplate("zones/{id}/dns_records").generate(pathParameters().add("id", zone.id));
+    public DnsRecord createDnsRecord(Zone zone, Map<String, Object> map) throws Exception {
+        Map<String, Object> data = json(post(zone.dnsRecordsPath()).
+                entity(Json.json(map)).
+                contentType(APPLICATION_JSON).
+                build());
+        return JsonRecord.create(DnsRecord.class, data);
     }
 
+    public DnsRecord delete(Zone zone, DnsRecord dnsRecord) throws Exception {
+        Map<String, Object> json = json(RequestBuilder.delete(zone.dnsRecordsPath().toString() + "/" + dnsRecord.id).build());
+        return JsonRecord.create(DnsRecord.class, json);
+    }
 }
