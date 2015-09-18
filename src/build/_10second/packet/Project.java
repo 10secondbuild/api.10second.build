@@ -17,6 +17,5 @@ public class Project extends JsonRecord {
     public Uri devicesPath() {
         return uri(uriTemplate("/projects/{id}/devices").generate(pathParameters().add("id", id)));
     }
-
 }
 

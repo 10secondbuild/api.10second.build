@@ -19,5 +19,4 @@ public class Device extends JsonRecord {
     public Sequence<IpAddress> ipAddresses() {
         return sequence(ip_addresses).map(data -> create(IpAddress.class, data));
     }
-
 }

@@ -8,6 +8,8 @@ import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.predicates.Predicate;
 import com.googlecode.utterlyidle.Request;
+import com.googlecode.utterlyidle.Response;
+import com.googlecode.utterlyidle.Status;
 import com.googlecode.utterlyidle.handlers.AuditHandler;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
@@ -26,9 +28,7 @@ import static com.googlecode.totallylazy.predicates.Predicates.is;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
-import static com.googlecode.utterlyidle.RequestBuilder.get;
-import static com.googlecode.utterlyidle.RequestBuilder.modify;
-import static com.googlecode.utterlyidle.RequestBuilder.post;
+import static com.googlecode.utterlyidle.RequestBuilder.*;
 import static java.lang.Thread.sleep;
 
 public class PacketClient {
@@ -56,8 +56,8 @@ public class PacketClient {
         return projects().find(p -> p.name.equals(name)).get();
     }
 
-    public Sequence<Map<String, Object>> facilities() throws Exception {
-        return list("facilities");
+    public Sequence<Facility> facilities() throws Exception {
+        return list("facilities").map(data -> JsonRecord.create(Facility.class, data));
     }
 
     public Sequence<Device> devices(Project project) throws Exception {
@@ -114,5 +114,10 @@ public class PacketClient {
 
     private Sequence<Map<String, Object>> list(String name, Uri path) throws Exception {
         return sequence(Unchecked.<List<Map<String, Object>>>cast(getJson(path).get(name)));
+    }
+
+    public void deprovisionDevice(Device device) throws Exception {
+        Response response = http.handle(delete("/devices/" + device.id).build());
+        assertThat(response.status(), is(Status.NO_CONTENT));
     }
 }
