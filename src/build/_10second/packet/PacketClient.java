@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
+import static com.googlecode.totallylazy.Assert.assertTrue;
 import static com.googlecode.totallylazy.Sequences.repeat;
 import static com.googlecode.totallylazy.Sequences.sequence;
 import static com.googlecode.totallylazy.Strings.blank;
@@ -118,6 +119,6 @@ public class PacketClient {
 
     public void deprovisionDevice(Device device) throws Exception {
         Response response = http.handle(delete("/devices/" + device.id).build());
-        assertThat(response.status(), is(Status.NO_CONTENT));
+        assertTrue(response.status().isSuccessful());
     }
 }
