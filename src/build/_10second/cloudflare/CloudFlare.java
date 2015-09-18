@@ -87,9 +87,9 @@ public class CloudFlare {
         return JsonRecord.create(Zone.class, zones.get(0));
     }
 
-    public Sequence<Map<String, Object>> dnsRecords(Zone zone) throws Exception {
+    public Sequence<DnsRecord> dnsRecords(Zone zone) throws Exception {
         List<Map<String, Object>> zones = json(get(dnsRecordsPath(zone)).build());
-        return sequence(zones);
+        return sequence(zones).map(data -> JsonRecord.create(DnsRecord.class, data));
     }
 
     private String dnsRecordsPath(Zone zone) {

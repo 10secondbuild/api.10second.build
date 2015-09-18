@@ -42,9 +42,9 @@ public class CloudFlareTest {
     @Test
     public void supportsDnsRecords() throws Exception {
         Zone zone = cloudFlare.zone("10second.build");
-        Sequence<Map<String, Object>> records = cloudFlare.dnsRecords(zone);
-        for (Map<String, Object> record : records) {
-            System.out.println(Json.json(record));
+        Sequence<DnsRecord> records = cloudFlare.dnsRecords(zone);
+        for (DnsRecord record : records) {
+            System.out.println(record);
         }
     }
 }
