@@ -1,7 +1,9 @@
 package build._10second.docker;
 
+import build._10second.CommandResponse;
 import build._10second.ContainerClient;
 import build._10second.ContainerResponse;
+import com.googlecode.totallylazy.Streams;
 
 import java.io.IOException;
 
@@ -19,5 +21,12 @@ public abstract class ContainerClientProcess implements ContainerClient {
         return new ProcessBuilder(command).
                 redirectErrorStream(true).
                 start();
+    }
+
+    @Override
+    public CommandResponse remove(String id) throws Exception {
+        Process process = process(processName(), "rm", id);
+        Streams.copy(process.getInputStream(), System.out);
+        return CommandResponse.commandResponse(process);
     }
 }

@@ -50,12 +50,17 @@ public abstract class JsonRecord extends AbstractMap<String, Object> {
     }
 
     private Set<Entry<String, Object>> fieldSet() {
-        Sequence<Class<?>> classes = allClasses(getClass()).
-                reject(c -> c.isInterface()).
-                takeWhile(c -> !c.equals(JsonRecord.class));
-        return set(classes.flatMap(Fields.fields()).
+        Sequence<Field> fields = fields();
+        return set(fields.
                 reject(where(modifiers, synthetic)).
                 map(f -> pair(f.getName(), Fields.get(f, this))));
+    }
+
+    private Sequence<Field> fields() {
+        Sequence<Class<?>> classes = allClasses(getClass()).
+                reject(Class::isInterface).
+                takeWhile(c -> !c.equals(JsonRecord.class));
+        return classes.flatMap(Fields.fields());
     }
 
     @Override
@@ -66,7 +71,7 @@ public abstract class JsonRecord extends AbstractMap<String, Object> {
     }
 
     private Option<Field> field(String name) {
-        return nonSyntheticFields(getClass()).
+        return fields().
                 find(f -> f.getName().equalsIgnoreCase(name)).
                 map(Fields::access);
     }
