@@ -1,6 +1,7 @@
 package build._10second.docker;
 
 import build._10second.ContainerConfig;
+import build._10second.ContainerProcess;
 import build._10second.CreateResponse;
 import com.googlecode.totallylazy.Strings;
 

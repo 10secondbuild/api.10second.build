@@ -2,7 +2,7 @@ package build._10second.hyper;
 
 import build._10second.ContainerConfig;
 import build._10second.CreateResponse;
-import build._10second.docker.ContainerProcess;
+import build._10second.ContainerProcess;
 import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.regex.Regex;

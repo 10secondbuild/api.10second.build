@@ -1,4 +1,4 @@
-package build._10second.docker;
+package build._10second;
 
 import build._10second.CommandResponse;
 import build._10second.ContainerClient;
