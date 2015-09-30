@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static build._10second.ContainerResponse.containerResponse;
 
-public abstract class ContainerClientProcess implements ContainerClient {
+public abstract class ContainerProcess implements ContainerClient {
     protected abstract String processName();
 
     @Override

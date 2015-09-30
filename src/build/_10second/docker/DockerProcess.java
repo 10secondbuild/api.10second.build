@@ -1,16 +1,14 @@
 package build._10second.docker;
 
-import build._10second.CommandResponse;
 import build._10second.ContainerConfig;
 import build._10second.CreateResponse;
-import com.googlecode.totallylazy.Streams;
 import com.googlecode.totallylazy.Strings;
 
 import java.io.InputStream;
 
 import static com.googlecode.totallylazy.functions.Lazy.lazy;
 
-public class DockerClient extends ContainerClientProcess {
+public class DockerProcess extends ContainerProcess {
     protected String processName() {
         return "docker";
     }

@@ -5,10 +5,7 @@ import com.googlecode.totallylazy.Strings;
 import org.junit.Test;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
-import static com.googlecode.totallylazy.Maps.map;
-import static com.googlecode.totallylazy.predicates.Predicates.instanceOf;
-import static com.googlecode.totallylazy.predicates.Predicates.is;
-import static com.googlecode.totallylazy.predicates.Predicates.not;
+import static com.googlecode.totallylazy.predicates.Predicates.*;
 
 public abstract class ContainerClientContract {
     protected abstract ContainerClient client();

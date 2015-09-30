@@ -1,9 +1,8 @@
 package build._10second.hyper;
 
-import build._10second.CommandResponse;
 import build._10second.ContainerConfig;
 import build._10second.CreateResponse;
-import build._10second.docker.ContainerClientProcess;
+import build._10second.docker.ContainerProcess;
 import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.regex.Regex;
@@ -17,7 +16,7 @@ import static com.googlecode.totallylazy.Lists.list;
 import static com.googlecode.totallylazy.Maps.map;
 import static com.googlecode.totallylazy.functions.Lazy.lazy;
 
-public class HyperClient extends ContainerClientProcess {
+public class HyperProcess extends ContainerProcess {
     protected String processName() {
         return "hyper";
     }
