@@ -1,7 +1,5 @@
 package build._10second.containers;
 
-import build._10second.containers.*;
-import com.googlecode.totallylazy.Streams;
 import com.googlecode.totallylazy.Strings;
 import org.junit.Test;
 
@@ -13,25 +11,23 @@ public abstract class ContainerClientContract {
 
     @Test
     public void supportsPulling() throws Exception {
-        ContainerResponse result = client().pull("ubuntu");
-        Streams.copy(result.log(), System.out);
-        assertThat(result.status(), is(0));
+        Result<String> result = client().pull("ubuntu");
+        assertThat(result.success(), is(true));
     }
 
     @Test
     public void pullingWithInvalidImageShouldError() throws Exception {
-        ContainerResponse result = client().pull("unknownimage");
-        Streams.copy(result.log(), System.out);
-        assertThat(result.status(), not(0));
+        Result<String> result = client().pull("unknownimage");
+        assertThat(result.success(), is(false));
     }
 
     @Test
     public void supportsCreatingAndRemoving() throws Exception {
-        CreateResponse result = client().create(new ContainerConfig() {{ image = "ubuntu"; }});
-        assertThat(result.status(), is(0));
-        assertThat(result.id(), is(instanceOf(String.class)));
-        assertThat(result.id(), is(not(Strings.contains("\n"))));
-        CommandResponse response = client().remove(result.id());
-        assertThat(response.status(), is(0));
+        Result<String> result = client().create(new ContainerConfig() {{ image = "ubuntu"; }});
+        assertThat(result.success(), is(true));
+        assertThat(result.value(), is(instanceOf(String.class)));
+        assertThat(result.value(), is(not(Strings.contains("\n"))));
+        Result<?> response = client().remove(result.value());
+        assertThat(response.success(), is(true));
     }
 }

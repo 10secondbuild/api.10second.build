@@ -3,6 +3,7 @@ package build._10second.containers.hyper;
 import build._10second.containers.ContainerConfig;
 import build._10second.containers.CreateResponse;
 import build._10second.containers.ContainerProcess;
+import build._10second.containers.Result;
 import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.regex.Regex;
@@ -22,7 +23,7 @@ public class HyperProcess extends ContainerProcess {
     }
 
     @Override
-    public CreateResponse create(ContainerConfig config) throws Exception {
+    public Result<String> create(ContainerConfig config) throws Exception {
         String json = Json.json(map("containers", list(map("image", config.image))));
         System.out.println("json = " + json);
         File pod = temporaryFile();
@@ -32,8 +33,8 @@ public class HyperProcess extends ContainerProcess {
 
     private static final Regex podId = Regex.regex("pod-\\w+");
 
-    public static CreateResponse createResponse(final Process process) throws InterruptedException {
+    public static Result<String> createResponse(final Process process) throws InterruptedException {
         String value = Strings.string(process.getInputStream());
-        return new CreateResponse(lazy(process::waitFor), podId.match(value).group());
+        return Result.result(() -> process.waitFor() == 0, podId.match(value).group());
     }
 }

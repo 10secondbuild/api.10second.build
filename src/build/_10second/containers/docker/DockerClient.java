@@ -3,6 +3,7 @@ package build._10second.containers.docker;
 import build._10second.*;
 import build._10second.containers.*;
 import com.googlecode.totallylazy.Streams;
+import com.googlecode.totallylazy.Strings;
 import com.googlecode.totallylazy.functions.Lazy;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
@@ -10,6 +11,7 @@ import com.googlecode.utterlyidle.Response;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Maps.map;
@@ -32,25 +34,26 @@ public class DockerClient implements ContainerClient {
     }
 
     @Override
-    public ContainerResponse pull(String name) throws Exception {
-        Response response = http.handle(post(Uri.uri("images/create")).query("fromImage", "ubuntu").query("tag", "latest").build());
-        Streams.copy(response.entity().inputStream(), System.out);
-        return null;
+    public Result<String> pull(String name) throws Exception {
+        Response response = http.handle(post(Uri.uri("images/create")).query("fromImage", name).query("tag", "latest").build());
+        InputStream inputStream = response.entity().inputStream();
+        String log = Strings.string(inputStream);
+        return Result.result(() -> !log.contains("error"), log);
     }
 
     @Override
-    public CreateResponse create(ContainerConfig config) throws Exception {
+    public Result<String> create(ContainerConfig config) throws Exception {
         Map<String, String> map = map("Image", config.image);
         Response response = http.handle(post("containers/create").
                 contentType(APPLICATION_JSON).
                 entity(Json.json(map)).build());
         String id = cast(Json.map(response.entity().toString()).get("Id"));
-        return new CreateResponse(Lazy.lazy(() -> response.status().code()), id);
+        return Result.result(Lazy.lazy(() -> response.status().isSuccessful()), id);
     }
 
     @Override
-    public CommandResponse remove(String id) throws Exception {
+    public Result<?> remove(String id) throws Exception {
         Response response = http.handle(delete("containers/" + id).build());
-        return () -> response.status().code();
+        return Result.result(() -> response.status().isSuccessful(), null);
     }
 }

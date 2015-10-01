@@ -1,6 +1,6 @@
 package build._10second.containers;
 
-import com.googlecode.totallylazy.Streams;
+import com.googlecode.totallylazy.Strings;
 
 import java.io.IOException;
 
@@ -8,8 +8,9 @@ public abstract class ContainerProcess implements ContainerClient {
     protected abstract String processName();
 
     @Override
-    public ContainerResponse pull(String name) throws Exception {
-        return ContainerResponse.containerResponse(process(processName(), "pull", name));
+    public Result<String> pull(String name) throws Exception {
+        Process process = process(processName(), "pull", name);
+        return Result.result(() -> process.waitFor() == 0, Strings.string(process.getInputStream()));
     }
 
     protected Process process(String... command) throws IOException {
@@ -19,9 +20,8 @@ public abstract class ContainerProcess implements ContainerClient {
     }
 
     @Override
-    public CommandResponse remove(String id) throws Exception {
+    public Result<?> remove(String id) throws Exception {
         Process process = process(processName(), "rm", id);
-        Streams.copy(process.getInputStream(), System.out);
-        return CommandResponse.commandResponse(process);
+        return Result.result(() -> process.waitFor()==0, null);
     }
 }
