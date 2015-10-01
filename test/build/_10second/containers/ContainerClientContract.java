@@ -1,5 +1,6 @@
-package build._10second;
+package build._10second.containers;
 
+import build._10second.containers.*;
 import com.googlecode.totallylazy.Streams;
 import com.googlecode.totallylazy.Strings;
 import org.junit.Test;

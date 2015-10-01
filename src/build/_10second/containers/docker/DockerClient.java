@@ -1,6 +1,7 @@
-package build._10second.docker;
+package build._10second.containers.docker;
 
 import build._10second.*;
+import build._10second.containers.*;
 import com.googlecode.totallylazy.Streams;
 import com.googlecode.totallylazy.functions.Lazy;
 import com.googlecode.totallylazy.io.Uri;

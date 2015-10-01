@@ -1,6 +1,4 @@
-package build._10second;
-
-import java.util.Map;
+package build._10second.containers;
 
 public interface ContainerClient {
     ContainerResponse pull(String name) throws Exception;

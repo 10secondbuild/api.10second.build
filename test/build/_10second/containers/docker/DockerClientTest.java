@@ -1,7 +1,7 @@
-package build._10second.docker;
+package build._10second.containers.docker;
 
-import build._10second.ContainerClient;
-import build._10second.ContainerClientContract;
+import build._10second.containers.ContainerClient;
+import build._10second.containers.ContainerClientContract;
 
 public class DockerClientTest extends ContainerClientContract {
     @Override

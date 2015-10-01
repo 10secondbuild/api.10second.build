@@ -1,8 +1,8 @@
-package build._10second.docker;
+package build._10second.containers.docker;
 
-import build._10second.ContainerConfig;
-import build._10second.ContainerProcess;
-import build._10second.CreateResponse;
+import build._10second.containers.ContainerConfig;
+import build._10second.containers.ContainerProcess;
+import build._10second.containers.CreateResponse;
 import com.googlecode.totallylazy.Strings;
 
 import java.io.InputStream;

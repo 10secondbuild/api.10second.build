@@ -1,8 +1,8 @@
-package build._10second.hyper;
+package build._10second.containers.hyper;
 
-import build._10second.ContainerConfig;
-import build._10second.CreateResponse;
-import build._10second.ContainerProcess;
+import build._10second.containers.ContainerConfig;
+import build._10second.containers.CreateResponse;
+import build._10second.containers.ContainerProcess;
 import com.googlecode.totallylazy.*;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.regex.Regex;

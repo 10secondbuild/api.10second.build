@@ -1,7 +1,7 @@
-package build._10second.hyper;
+package build._10second.containers.hyper;
 
-import build._10second.ContainerClient;
-import build._10second.ContainerClientContract;
+import build._10second.containers.ContainerClient;
+import build._10second.containers.ContainerClientContract;
 
 public class HyperProcessTest extends ContainerClientContract {
     @Override

@@ -1,20 +1,15 @@
-package build._10second;
+package build._10second.containers;
 
-import build._10second.CommandResponse;
-import build._10second.ContainerClient;
-import build._10second.ContainerResponse;
 import com.googlecode.totallylazy.Streams;
 
 import java.io.IOException;
-
-import static build._10second.ContainerResponse.containerResponse;
 
 public abstract class ContainerProcess implements ContainerClient {
     protected abstract String processName();
 
     @Override
     public ContainerResponse pull(String name) throws Exception {
-        return containerResponse(process(processName(), "pull", name));
+        return ContainerResponse.containerResponse(process(processName(), "pull", name));
     }
 
     protected Process process(String... command) throws IOException {
