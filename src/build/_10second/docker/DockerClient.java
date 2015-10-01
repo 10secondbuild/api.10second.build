@@ -1,6 +1,7 @@
 package build._10second.docker;
 
 import build._10second.*;
+import com.googlecode.totallylazy.Streams;
 import com.googlecode.totallylazy.functions.Lazy;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
@@ -21,8 +22,7 @@ public class DockerClient implements ContainerClient {
     public DockerClient(Uri baseUrl, HttpClient http) {
         this.http = new ModifyRequest(new AuditFailures(http), request ->
                 modify(request).
-                        uri(baseUrl.mergePath(request.uri().path())).
-                        accepting(APPLICATION_JSON).
+                        uri(baseUrl.mergePath(request.uri().path()).query(request.uri().query())).
                         build());
     }
 
@@ -32,8 +32,8 @@ public class DockerClient implements ContainerClient {
 
     @Override
     public ContainerResponse pull(String name) throws Exception {
-        Response response = http.handle(post("images/create").query("fromImage", name).build());
-        System.out.println("response = " + response);
+        Response response = http.handle(post(Uri.uri("images/create")).query("fromImage", "ubuntu").query("tag", "latest").build());
+        Streams.copy(response.entity().inputStream(), System.out);
         return null;
     }
 

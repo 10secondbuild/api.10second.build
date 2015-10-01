@@ -40,7 +40,7 @@ public class PacketClient {
     public PacketClient(String apiKey, HttpClient http) {
         this.http = new ModifyRequest(new AuditFailures(http), request ->
                 modify(request).
-                uri(baseUrl.mergePath(request.uri().path())).
+                uri(baseUrl.mergePath(request.uri().path()).query(request.uri().query())).
                 header("X-Auth-Token", apiKey).
                 accepting(APPLICATION_JSON).
                 build());

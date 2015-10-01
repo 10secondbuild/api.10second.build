@@ -8,4 +8,5 @@ public class DockerClientTest extends ContainerClientContract {
     protected ContainerClient client() {
         return new DockerClient();
     }
+
 }

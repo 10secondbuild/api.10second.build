@@ -34,13 +34,15 @@ public class CloudFlareClient {
     private static final Uri baseUrl = uri("https://api.cloudflare.com/client/v4/");
 
     public CloudFlareClient(String apiKey, String email, HttpClient http) {
-        this.http = new ModifyRequest(new AuditFailures(http), request ->
-                modify(request).
-                uri(baseUrl.mergePath(request.uri().path())).
-                header("X-Auth-Key", apiKey).
-                header("X-Auth-Email", email).
-                accepting(APPLICATION_JSON).
-                build());
+        this.http = new ModifyRequest(new AuditFailures(http), request -> {
+            Uri original = request.uri();
+            return modify(request).
+                    uri(baseUrl.mergePath(original.path()).query(original.query())).
+                    header("X-Auth-Key", apiKey).
+                    header("X-Auth-Email", email).
+                    accepting(APPLICATION_JSON).
+                    build();
+        });
     }
 
     public CloudFlareClient() {
