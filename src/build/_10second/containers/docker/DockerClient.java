@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static com.googlecode.totallylazy.Maps.map;
 import static com.googlecode.totallylazy.Unchecked.cast;
+import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.RequestBuilder.*;
 
@@ -30,12 +31,19 @@ public class DockerClient implements ContainerClient {
     }
 
     public DockerClient() {
-        this(Uri.uri("http://localhost:2376/"), new ClientHttpHandler());
+        this(host(), new ClientHttpHandler());
+    }
+
+    private static Uri host() {
+        String docker_host = System.getenv("DOCKER_HOST");
+        if(docker_host == null) return uri("http://localhost:2376/");
+        if("1".equals(System.getenv("DOCKER_TLS_VERIFY")) throw new UnsupportedOperationException("Not yet implemented TLS handling");
+        return uri(docker_host.replace("tcp://", "http://"));
     }
 
     @Override
     public Result<String> pull(String name) throws Exception {
-        Response response = http.handle(post(Uri.uri("images/create")).query("fromImage", name).query("tag", "latest").build());
+        Response response = http.handle(post("images/create").query("fromImage", name).query("tag", "latest").build());
         InputStream inputStream = response.entity().inputStream();
         String log = Strings.string(inputStream);
         return Result.result(() -> !log.contains("error"), log);
