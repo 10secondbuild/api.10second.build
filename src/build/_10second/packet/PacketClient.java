@@ -1,6 +1,7 @@
 package build._10second.packet;
 
 import build._10second.AuditFailures;
+import build._10second.Environment;
 import build._10second.JsonRecord;
 import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
@@ -11,10 +12,8 @@ import com.googlecode.totallylazy.predicates.Predicate;
 import com.googlecode.utterlyidle.Request;
 import com.googlecode.utterlyidle.Response;
 import com.googlecode.utterlyidle.Status;
-import com.googlecode.utterlyidle.handlers.AuditHandler;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
-import com.googlecode.utterlyidle.handlers.PrintAuditor;
 
 import java.time.Duration;
 import java.util.List;
@@ -47,7 +46,7 @@ public class PacketClient {
     }
 
     public PacketClient() {
-        this(hasValue(System.getenv("PACKET_API_KEY")), new ClientHttpHandler());
+        this(Environment.getMandatory("PACKET_API_KEY"), new ClientHttpHandler());
     }
 
     public Sequence<Project> projects() throws Exception {
@@ -80,11 +79,6 @@ public class PacketClient {
 
     public Device reload(Device device) throws Exception {
         return JsonRecord.create(Device.class, getJson(device.href));
-    }
-
-    private static String hasValue(String value) {
-        assertThat(value, not(blank));
-        return value;
     }
 
     private Map<String, Object> getJson(String path) throws Exception {

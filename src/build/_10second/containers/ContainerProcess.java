@@ -8,8 +8,8 @@ public abstract class ContainerProcess implements ContainerClient {
     protected abstract String processName();
 
     @Override
-    public Result<String> pull(String name) throws Exception {
-        Process process = process(processName(), "pull", name);
+    public Result<String> pull(ContainerConfig config) throws Exception {
+        Process process = process(processName(), "pull", config.image + ":" + config.tag);
         return Result.result(() -> process.waitFor() == 0, Strings.string(process.getInputStream()));
     }
 

@@ -4,4 +4,5 @@ import build._10second.JsonRecord;
 
 public class ContainerConfig extends JsonRecord {
     public String image;
+    public String tag = "latest";
 }

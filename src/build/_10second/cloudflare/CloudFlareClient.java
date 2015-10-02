@@ -1,18 +1,16 @@
 package build._10second.cloudflare;
 
+import build._10second.Environment;
 import build._10second.AuditFailures;
 import build._10second.JsonRecord;
 import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
-import com.googlecode.utterlyidle.MediaType;
 import com.googlecode.utterlyidle.Request;
 import com.googlecode.utterlyidle.RequestBuilder;
-import com.googlecode.utterlyidle.handlers.AuditHandler;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
-import com.googlecode.utterlyidle.handlers.PrintAuditor;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +22,6 @@ import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.not;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
-import static com.googlecode.utterlyidle.MediaType.APPLICATION_JAVASCRIPT;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.PathParameters.pathParameters;
 import static com.googlecode.utterlyidle.RequestBuilder.*;
@@ -50,16 +47,11 @@ public class CloudFlareClient {
     }
 
     private static String apiKey() {
-        return hasValue(System.getenv("CLOUDFLARE_API_KEY"));
+        return Environment.getMandatory("CLOUDFLARE_API_KEY");
     }
 
     public static String email() {
-        return hasValue(System.getenv("CLOUDFLARE_EMAIL"));
-    }
-
-    private static String hasValue(String value) {
-        assertThat(value, not(blank));
-        return value;
+        return Environment.getMandatory("CLOUDFLARE_EMAIL");
     }
 
     public <T> T getJson(String path) throws Exception {

@@ -11,13 +11,13 @@ public abstract class ContainerClientContract {
 
     @Test
     public void supportsPulling() throws Exception {
-        Result<String> result = client().pull("ubuntu");
+        Result<String> result = client().pull(new ContainerConfig() {{ image = "ubuntu"; }});
         assertThat(result.success(), is(true));
     }
 
     @Test
     public void pullingWithInvalidImageShouldError() throws Exception {
-        Result<String> result = client().pull("unknownimage");
+        Result<String> result = client().pull(new ContainerConfig() {{ image = "unknownimage"; }});
         assertThat(result.success(), is(false));
     }
 
