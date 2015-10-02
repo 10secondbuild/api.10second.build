@@ -1,3 +1,10 @@
 mvn://repo.bodar.com/com.googlecode.totallylazy:totallylazy:pack|sources:2.193
 mvn://repo.bodar.com/com.googlecode.utterlyidle:utterlyidle:pack|sources:2.39
 mvn://repo.bodar.com/com.googlecode.yadic:yadic:pack|sources:2.43
+
+# WebSocket Client
+mvn:org.eclipse.jetty:jetty-io:jar|sources:9.3.4.RC0
+mvn:org.eclipse.jetty:jetty-util:jar|sources:9.3.4.RC0
+mvn:org.eclipse.jetty.websocket:websocket-api:jar|sources:9.3.4.RC0
+mvn:org.eclipse.jetty.websocket:websocket-common:jar|sources:9.3.4.RC0
+mvn:org.eclipse.jetty.websocket:websocket-client:jar|sources:9.3.4.RC0
