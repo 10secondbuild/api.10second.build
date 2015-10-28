@@ -10,16 +10,11 @@ import com.googlecode.totallylazy.Strings;
 import com.googlecode.totallylazy.functions.Lazy;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
-import com.googlecode.utterlyidle.Request;
 import com.googlecode.utterlyidle.Response;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Maps.map;
@@ -93,38 +88,7 @@ public class DockerClient implements ContainerClient {
 
     @Override
     public Result<InputStream> attach(String id) throws Exception {
-
-        Request req = get("/containers/" + id + "/attach/ws").
-                query("logs", "1").
-                query("stream", "1").
-                query("stdin", "1").
-                query("stdout", "1").
-                query("stderr", "1").
-                build();
-
-        WebSocketClient client = new WebSocketClient();
-        WebSocketAdapter socket = new WebSocketAdapter() {
-            @Override
-            public void onWebSocketText(String message) {
-                System.out.println("text = " + message);
-            }
-
-            @Override
-            public void onWebSocketBinary(byte[] payload, int offset, int len) {
-                System.out.println("binary");
-            }
-
-        };
-        client.start();
-        URI uri = merge(req.uri()).scheme("ws").toURI();
-        System.out.printf("Connecting to : %s%n", uri);
-        Session session = client.connect(socket, uri).get();
-
-        client.stop();
-        socket.getSession().close();
-
-
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
 
