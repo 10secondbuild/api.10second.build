@@ -33,8 +33,8 @@ public class HyperProcess extends ContainerProcess {
 
     private static final Regex podId = Regex.regex("pod-\\w+");
 
-    public static Result<String> createResponse(final Process process) throws InterruptedException {
-        String value = Strings.string(process.getInputStream());
-        return Result.result(() -> process.waitFor() == 0, podId.match(value).group());
+    public static Result<String> createResponse(final Result<File> process) throws InterruptedException {
+        process.success(); // force wait
+        return process.map(f -> podId.match(Strings.string(f)).group());
     }
 }

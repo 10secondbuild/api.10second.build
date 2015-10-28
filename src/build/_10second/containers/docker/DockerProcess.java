@@ -5,6 +5,7 @@ import build._10second.containers.ContainerProcess;
 import build._10second.containers.Result;
 import com.googlecode.totallylazy.Strings;
 
+import java.io.File;
 import java.io.InputStream;
 
 public class DockerProcess extends ContainerProcess {
@@ -14,9 +15,9 @@ public class DockerProcess extends ContainerProcess {
 
     @Override
     public Result<String> create(ContainerConfig config) throws Exception{
-        Process process = process(processName(), "create", config.image);
-        InputStream inputStream = process.getInputStream();
-        return Result.result(() -> process.waitFor() == 0, Strings.string(inputStream).trim());
+        Result<File> result = process(processName(), "create", config.image);
+        result.success(); // force wait
+        return result.map(f -> Strings.string(f).trim());
     }
 
 }
