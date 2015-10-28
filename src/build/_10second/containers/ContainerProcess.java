@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static build._10second.containers.Result.result;
+import static com.googlecode.totallylazy.Sequences.sequence;
 
 public abstract class ContainerProcess implements ContainerClient {
     protected abstract String processName();
@@ -30,6 +31,10 @@ public abstract class ContainerProcess implements ContainerClient {
     @Override
     public Result<?> stop(String id) throws Exception {
         return process(processName(), "stop", id);
+    }
+
+    protected Result<File> process(Iterable<? extends String> command) throws IOException {
+        return process(sequence(command).toArray(String.class));
     }
 
     protected Result<File> process(String... command) throws IOException {

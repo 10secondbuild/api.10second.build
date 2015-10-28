@@ -24,7 +24,7 @@ public class HyperProcess extends ContainerProcess {
 
     @Override
     public Result<String> create(ContainerConfig config) throws Exception {
-        String json = Json.json(map("containers", list(map("image", config.image))));
+        String json = Json.json(map("containers", list(map("image", config.image, "command", config.command))));
         System.out.println("json = " + json);
         File pod = temporaryFile();
         write(bytes(json), pod);
@@ -35,6 +35,10 @@ public class HyperProcess extends ContainerProcess {
 
     public static Result<String> createResponse(final Result<File> process) throws InterruptedException {
         process.success(); // force wait
-        return process.map(f -> podId.match(Strings.string(f)).group());
+        return process.map(f -> {
+            String result = Strings.string(f);
+            System.out.println(result);
+            return podId.match(result).group();
+        });
     }
 }
