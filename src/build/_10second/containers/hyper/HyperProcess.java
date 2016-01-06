@@ -1,7 +1,6 @@
 package build._10second.containers.hyper;
 
 import build._10second.containers.ContainerConfig;
-import build._10second.containers.CreateResponse;
 import build._10second.containers.ContainerProcess;
 import build._10second.containers.Result;
 import com.googlecode.totallylazy.*;
@@ -9,13 +8,15 @@ import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.regex.Regex;
 
 import java.io.File;
+import java.io.InputStream;
 
+import static build._10second.containers.Result.result;
 import static com.googlecode.totallylazy.Bytes.bytes;
 import static com.googlecode.totallylazy.Files.temporaryFile;
 import static com.googlecode.totallylazy.Files.write;
 import static com.googlecode.totallylazy.Lists.list;
 import static com.googlecode.totallylazy.Maps.map;
-import static com.googlecode.totallylazy.functions.Lazy.lazy;
+import static java.lang.String.format;
 
 public class HyperProcess extends ContainerProcess {
     protected String processName() {
