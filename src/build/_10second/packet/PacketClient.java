@@ -20,16 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 import static com.googlecode.totallylazy.Assert.assertThat;
-import static com.googlecode.totallylazy.Assert.assertTrue;
 import static com.googlecode.totallylazy.Sequences.repeat;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Strings.blank;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.is;
-import static com.googlecode.totallylazy.predicates.Predicates.not;
+import static com.googlecode.utterlyidle.HttpHeaders.ACCEPT;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
-import static com.googlecode.utterlyidle.RequestBuilder.*;
+import static com.googlecode.utterlyidle.Request.*;
 import static java.lang.Thread.sleep;
 
 public class PacketClient {
@@ -38,11 +36,10 @@ public class PacketClient {
 
     public PacketClient(String apiKey, HttpClient http) {
         this.http = new ModifyRequest(new AuditFailures(http), request ->
-                modify(request).
+                request.
                 uri(baseUrl.mergePath(request.uri().path()).query(request.uri().query())).
                 header("X-Auth-Token", apiKey).
-                accepting(APPLICATION_JSON).
-                build());
+                header(ACCEPT, APPLICATION_JSON));
     }
 
     public PacketClient() {
@@ -86,7 +83,7 @@ public class PacketClient {
     }
 
     private Map<String, Object> getJson(Uri path) throws Exception {
-        return json(get(path).build());
+        return json(get(path));
     }
 
     private Map<String, Object> postJson(String path, Map<String, Object> json) throws Exception {
@@ -96,8 +93,7 @@ public class PacketClient {
     private Map<String, Object> postJson(Uri path, Map<String, Object> json) throws Exception {
         return json(post(path).
                 entity(Json.json(json)).
-                header(CONTENT_TYPE, APPLICATION_JSON).
-                build());
+                header(CONTENT_TYPE, APPLICATION_JSON));
     }
 
     private Map<String, Object> json(Request request) throws Exception {
@@ -113,7 +109,7 @@ public class PacketClient {
     }
 
     public void deprovisionDevice(Device device) throws Exception {
-        Response response = http.handle(delete(device.href).build());
+        Response response = http.handle(delete(device.href));
         assertThat(response.status(), is(Status.NO_CONTENT));
     }
 }

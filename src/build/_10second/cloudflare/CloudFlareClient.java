@@ -1,30 +1,27 @@
 package build._10second.cloudflare;
 
-import build._10second.Environment;
 import build._10second.AuditFailures;
+import build._10second.Environment;
 import build._10second.JsonRecord;
 import build._10second.ModifyRequest;
 import com.googlecode.totallylazy.Sequence;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
+import com.googlecode.utterlyidle.HttpHeaders;
 import com.googlecode.utterlyidle.Request;
-import com.googlecode.utterlyidle.RequestBuilder;
 import com.googlecode.utterlyidle.handlers.ClientHttpHandler;
 import com.googlecode.utterlyidle.handlers.HttpClient;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.googlecode.totallylazy.Assert.assertThat;
 import static com.googlecode.totallylazy.Sequences.sequence;
-import static com.googlecode.totallylazy.Strings.blank;
 import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.totallylazy.io.Uri.uri;
-import static com.googlecode.totallylazy.predicates.Predicates.not;
+import static com.googlecode.utterlyidle.HttpHeaders.ACCEPT;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
-import static com.googlecode.utterlyidle.PathParameters.pathParameters;
-import static com.googlecode.utterlyidle.RequestBuilder.*;
+import static com.googlecode.utterlyidle.Request.*;
 
 public class CloudFlareClient {
     private final HttpClient http;
@@ -33,12 +30,11 @@ public class CloudFlareClient {
     public CloudFlareClient(String apiKey, String email, HttpClient http) {
         this.http = new ModifyRequest(new AuditFailures(http), request -> {
             Uri original = request.uri();
-            return modify(request).
+            return request.
                     uri(baseUrl.mergePath(original.path()).query(original.query())).
                     header("X-Auth-Key", apiKey).
                     header("X-Auth-Email", email).
-                    accepting(APPLICATION_JSON).
-                    build();
+                    header(ACCEPT, APPLICATION_JSON);
         });
     }
 
@@ -55,14 +51,13 @@ public class CloudFlareClient {
     }
 
     public <T> T getJson(String path) throws Exception {
-        return json(get(path).build());
+        return json(get(path));
     }
 
     public <T> T postJson(String path, Map<String, Object> json) throws Exception {
         return json(post(path).
                 entity(Json.json(json)).
-                header(CONTENT_TYPE, APPLICATION_JSON).
-                build());
+                header(CONTENT_TYPE, APPLICATION_JSON));
     }
 
     private <T> T json(Request request) throws Exception {
@@ -80,25 +75,24 @@ public class CloudFlareClient {
     }
 
     public Zone zone(String name) throws Exception {
-        List<Map<String, Object>> zones = json(get("zones").query("name", name).build());
+        List<Map<String, Object>> zones = json(get("zones").query("name", name));
         return JsonRecord.create(Zone.class, zones.get(0));
     }
 
     public Sequence<DnsRecord> dnsRecords(Zone zone) throws Exception {
-        List<Map<String, Object>> zones = json(get(zone.dnsRecordsPath()).build());
+        List<Map<String, Object>> zones = json(get(zone.dnsRecordsPath()));
         return sequence(zones).map(data -> JsonRecord.create(DnsRecord.class, data));
     }
 
     public DnsRecord createDnsRecord(Zone zone, Map<String, Object> map) throws Exception {
         Map<String, Object> data = json(post(zone.dnsRecordsPath()).
                 entity(Json.json(map)).
-                contentType(APPLICATION_JSON).
-                build());
+                contentType(APPLICATION_JSON));
         return JsonRecord.create(DnsRecord.class, data);
     }
 
     public String delete(Zone zone, DnsRecord dnsRecord) throws Exception {
-        Map<String, Object> json = json(RequestBuilder.delete(zone.dnsRecordsPath().toString() + "/" + dnsRecord.id).build());
+        Map<String, Object> json = json(Request.delete(zone.dnsRecordsPath().toString() + "/" + dnsRecord.id));
         return cast(json.get("id"));
     }
 }

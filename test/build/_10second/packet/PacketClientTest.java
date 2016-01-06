@@ -78,7 +78,7 @@ public class PacketClientTest {
 
         Device provisioned = client.provisionDevice(project, map(
             "hostname", testHost,
-            "plan", "baremetal_1",
+            "plan", "baremetal_0",
             "facility", "ewr1",
             "operating_system", "ubuntu_14_04"
         ));

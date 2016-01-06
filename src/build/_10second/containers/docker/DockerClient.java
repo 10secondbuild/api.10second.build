@@ -21,7 +21,7 @@ import static com.googlecode.totallylazy.Maps.map;
 import static com.googlecode.totallylazy.Unchecked.cast;
 import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
-import static com.googlecode.utterlyidle.RequestBuilder.*;
+import static com.googlecode.utterlyidle.Request.*;
 
 public class DockerClient implements ContainerClient {
     private final Uri baseUrl;
@@ -30,9 +30,7 @@ public class DockerClient implements ContainerClient {
     public DockerClient(Uri baseUrl, HttpClient http) {
         this.baseUrl = baseUrl;
         this.http = new ModifyRequest(new AuditFailures(http), request ->
-                modify(request).
-                        uri(merge(request.uri())).
-                        build());
+                request.uri(merge(request.uri())));
     }
 
     private Uri merge(Uri original) {
@@ -52,7 +50,7 @@ public class DockerClient implements ContainerClient {
 
     @Override
     public Result<String> pull(ContainerConfig config) throws Exception {
-        Response response = http.handle(post("images/create").query("fromImage", config.image).query("tag", config.tag).build());
+        Response response = http.handle(post("images/create").query("fromImage", config.image).query("tag", config.tag));
         InputStream inputStream = response.entity().inputStream();
         String log = Strings.string(inputStream);
         return Result.result(() -> !log.contains("error"), log);
@@ -63,26 +61,26 @@ public class DockerClient implements ContainerClient {
         Map<String, String> map = map("Image", config.image + ":" + config.tag);
         Response response = http.handle(post("containers/create").
                 contentType(APPLICATION_JSON).
-                entity(Json.json(map)).build());
+                entity(Json.json(map)));
         String id = cast(Json.map(response.entity().toString()).get("Id"));
         return Result.result(Lazy.lazy(() -> response.status().isSuccessful()), id);
     }
 
     @Override
     public Result<?> start(String id) throws Exception {
-        Response response = http.handle(post("containers/" + id + "/start").build());
+        Response response = http.handle(post("containers/" + id + "/start"));
         return Result.result(() -> response.status().isSuccessful(), null);
     }
 
     @Override
     public Result<?> stop(String id) throws Exception {
-        Response response = http.handle(post("containers/" + id + "/stop").build());
+        Response response = http.handle(post("containers/" + id + "/stop"));
         return Result.result(() -> response.status().isSuccessful(), null);
     }
 
     @Override
     public Result<?> remove(String id) throws Exception {
-        Response response = http.handle(delete("containers/" + id).build());
+        Response response = http.handle(delete("containers/" + id));
         return Result.result(() -> response.status().isSuccessful(), null);
     }
 
