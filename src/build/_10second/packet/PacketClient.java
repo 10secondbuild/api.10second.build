@@ -9,6 +9,7 @@ import com.googlecode.totallylazy.Unchecked;
 import com.googlecode.totallylazy.io.Uri;
 import com.googlecode.totallylazy.json.Json;
 import com.googlecode.totallylazy.predicates.Predicate;
+import com.googlecode.utterlyidle.HttpHeaders;
 import com.googlecode.utterlyidle.Request;
 import com.googlecode.utterlyidle.Response;
 import com.googlecode.utterlyidle.Status;
@@ -26,6 +27,7 @@ import static com.googlecode.totallylazy.io.Uri.uri;
 import static com.googlecode.totallylazy.predicates.Predicates.is;
 import static com.googlecode.utterlyidle.HttpHeaders.ACCEPT;
 import static com.googlecode.utterlyidle.HttpHeaders.CONTENT_TYPE;
+import static com.googlecode.utterlyidle.HttpHeaders.USER_AGENT;
 import static com.googlecode.utterlyidle.MediaType.APPLICATION_JSON;
 import static com.googlecode.utterlyidle.Request.*;
 import static java.lang.Thread.sleep;
@@ -38,6 +40,7 @@ public class PacketClient {
         this.http = new ModifyRequest(new AuditFailures(http), request ->
                 request.
                 uri(baseUrl.mergePath(request.uri().path()).query(request.uri().query())).
+                header(USER_AGENT, "Mozilla/5.0 (compatible; UI)").
                 header("X-Auth-Token", apiKey).
                 header(ACCEPT, APPLICATION_JSON));
     }

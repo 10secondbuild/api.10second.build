@@ -15,8 +15,8 @@ import static com.googlecode.totallylazy.Assert.assertFalse;
 import static com.googlecode.totallylazy.Maps.map;
 
 public class Script {
-    String domain = "10second.build";
-    String hostname = "agent." + domain;
+    String domain = "bodar.com";
+    String hostname = "build." + domain;
 
     @Test
     @Ignore("Manual")
